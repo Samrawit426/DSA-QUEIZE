@@ -1,57 +1,62 @@
-import java.util.Stack;
+public class circularQueue {
+    private int[] queueArray;
+    private int front;
+    private int rear;
+    private int maxSize;
+    private int currentSize;
 
-public class linearQueueUsingStack {
-    private Stack<Integer> stack1; // For enqueue operation
-    private Stack<Integer> stack2; // For dequeue operation
+    public circularQueue(int capacity) {
+        maxSize = capacity;
+        queueArray = new int[maxSize];
+        front = 0;
+        rear = -1;
+        currentSize = 0;
+    }
 
-    public linearQueueUsingStack() {
-        stack1 = new Stack<>();
-        stack2 = new Stack<>();
+    public boolean isEmpty() {
+        return currentSize == 0;
+    }
+
+    public boolean isFull() {
+        return currentSize == maxSize;
     }
 
     public void enqueue(int item) {
-        stack1.push(item);
+        if (isFull()) {
+            System.out.println("Queue is full. Cannot enqueue item: " + item);
+            return;
+        }
+
+        rear = (rear + 1) % maxSize;
+        queueArray[rear] = item;
+        currentSize++;
         System.out.println("Enqueued item: " + item);
     }
 
     public int dequeue() {
-        if (stack1.isEmpty() && stack2.isEmpty()) {
+        if (isEmpty()) {
             System.out.println("Queue is empty. Cannot dequeue item.");
             return -1; // or throw an exception
         }
 
-        if (stack2.isEmpty()) {
-            while (!stack1.isEmpty()) {
-                stack2.push(stack1.pop());
-            }
-        }
-
-        int dequeuedItem = stack2.pop();
+        int dequeuedItem = queueArray[front];
+        front = (front + 1) % maxSize;
+        currentSize--;
         System.out.println("Dequeued item: " + dequeuedItem);
         return dequeuedItem;
     }
 
     public int peek() {
-        if (stack1.isEmpty() && stack2.isEmpty()) {
+        if (isEmpty()) {
             System.out.println("Queue is empty. Cannot peek item.");
             return -1; // or throw an exception
         }
 
-        if (stack2.isEmpty()) {
-            while (!stack1.isEmpty()) {
-                stack2.push(stack1.pop());
-            }
-        }
-
-        return stack2.peek();
-    }
-
-    public boolean isEmpty() {
-        return stack1.isEmpty() && stack2.isEmpty();
+        return queueArray[front];
     }
 
     public int size() {
-        return stack1.size() + stack2.size();
+        return currentSize;
     }
 
     public void display() {
@@ -61,17 +66,15 @@ public class linearQueueUsingStack {
         }
 
         System.out.print("Queue (front to rear): ");
-        for (int i = stack2.size() - 1; i >= 0; i--) {
-            System.out.print(stack2.get(i) + " ");
-        }
-        for (int item : stack1) {
-            System.out.print(item + " ");
+        for (int i = 0; i < currentSize; i++) {
+            int index = (front + i) % maxSize;
+            System.out.print(queueArray[index] + " ");
         }
         System.out.println();
     }
 
     public static void main(String[] args) {
-        linearQueueUsingStack queue = new linearQueueUsingStack();
+        circularQueue queue = new circularQueue(5);
 
         queue.enqueue(10);
         queue.enqueue(20);
